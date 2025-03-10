@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   fractol.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lucabohn <lucabohn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lbohm <lbohm@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 16:14:42 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/03/09 18:41:12 by lucabohn         ###   ########.fr       */
+/*   Updated: 2025/03/10 17:03:54 by lbohm            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,14 +26,15 @@ typedef struct s_data
 
 typedef struct s_color
 {
-	int	r;
-	int	g;
-	int	b;
-	int	a;
+	char	r;
+	char	g;
+	char	b;
+	char	a;
 }				t_color;
 
 void		init_data(char *type, t_data *data);
 void		create_fractal(t_data *data);
+void		calc_mandelbrot(float real, float imaginary, t_color *color);
 uint32_t	create_color(uint32_t r, uint32_t g, uint32_t b, uint32_t a);
 void		error(int msg, t_data *data);
 

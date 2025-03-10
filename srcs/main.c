@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lucabohn <lucabohn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lbohm <lbohm@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 16:14:08 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/03/09 18:41:40 by lucabohn         ###   ########.fr       */
+/*   Updated: 2025/03/10 17:01:50 by lbohm            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/fractol.h"
+#include <stdio.h>
 
 int	main(int argc, char **argv)
 {
@@ -47,8 +48,11 @@ void	init_data(char *type, t_data *data)
 
 void	create_fractal(t_data *data)
 {
-	int	x;
-	int	y;
+	int		x;
+	int		y;
+	float	real;
+	float	imaginary;
+	t_color	color = {0, 0, 0, 0};
 
 	y = 0;
 	while (y < 400)
@@ -56,11 +60,19 @@ void	create_fractal(t_data *data)
 		x = 0;
 		while (x < 400)
 		{
-			mlx_put_pixel(data->img_ptr, x, y, create_color(20, 200, 150, 255));
+			real = -2.0 + ((float)x / 100.0);
+			imaginary = -2.0 + ((float)y / 100.0);
+			calc_mandelbrot(real, imaginary, &color);
+			mlx_put_pixel(data->img_ptr, x, y, create_color(252, 190, 17, 255));
 			++x;
 		}
 		++y;
 	}
+}
+
+void	calc_mandelbrot(float real, float imaginary, t_color &color)
+{
+	
 }
 
 uint32_t	create_color(uint32_t r, uint32_t g, uint32_t b, uint32_t a)

@@ -13,10 +13,10 @@ PRINTF = libs/ft_printf/
 MLX = libs/mlx
 INLIBFT = -L $(LIBFT) -lft
 INPRINF = -L $(PRINTF) -lftprintf
-INMLX = -L $(MLX)/build -lmlx42 -ldl -L /opt/homebrew/Cellar/glfw/3.3.8/lib/ -lglfw -pthread -lm
+INMLX = -L $(MLX)/build -lmlx42 -ldl -L /usr/local/lib/ -lglfw -pthread -lm
 
+# /opt/homebrew/Cellar/glfw/3.3.8/lib/
 
-# /usr/local/lib/
 
 all:		submodules $(OBJDIR) $(NAME)
 
