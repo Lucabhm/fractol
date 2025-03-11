@@ -6,7 +6,7 @@
 /*   By: lbohm <lbohm@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 16:14:08 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/03/11 17:07:02 by lbohm            ###   ########.fr       */
+/*   Updated: 2025/03/11 19:08:19 by lbohm            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	init_data(char *type, t_data *data)
 	if (!ft_strncmp(type, "Mandelbrot", ft_strlen(type)))
 	{
 		data->type = 0;
-		data->offset = 0.5;
+		data->offset = 0.6;
 	}
 	else if (!ft_strncmp(type, "Julia", ft_strlen(type)))
 		data->type = 1;
@@ -60,7 +60,7 @@ void	loop(void *param)
 	mlx_key_hook(data->win_ptr, key, data);
 	mlx_scroll_hook(data->win_ptr, scroll, data);
 	create_fractal(data);
-	printf("time = %f\n", data->win_ptr->delta_time);
+	// printf("time = %f\n", data->win_ptr->delta_time);
 }
 
 void	resize(int width, int height, void *param)
@@ -89,10 +89,12 @@ void	key(mlx_key_data_t keydata, void *param)
 void	scroll(double xdelta, double ydelta, void *param)
 {
 	t_data	*data;
+	double	zoom_factor;
 
 	data = param;
-	printf("xdelta = %f ydelta = %f\n", xdelta, ydelta);
-	data->zoom += ydelta;
+	zoom_factor = 1.0 + (ydelta + xdelta) * 0.1;
+	data->zoom *= zoom_factor;
+	printf("zoom = %f\n", data->zoom);
 }
 
 void	create_fractal(t_data *data)
@@ -109,8 +111,10 @@ void	create_fractal(t_data *data)
 		x = 0;
 		while (x < data->win_width)
 		{
-			real = (-2.0 + (4 * (float)x / data->win_width) - data->offset) * data->zoom;
-			imaginary = (-2.0 + (4 * (float)y / data->win_height)) * data->zoom;
+			real = ((-2.0 * data->zoom) + ((4 * data->zoom) * (float)x / data->win_width) - data->offset);
+			imaginary = ((-2.0 * data->zoom) + ((4 * data->zoom) * (float)y / data->win_height));
+			// real = (-2.0 + (4 * (float)x / data->win_width) - data->offset) * data->zoom;
+			// imaginary = (-2.0 + (4 * (float)y / data->win_height)) * data->zoom;
 			calc_mandelbrot(real, imaginary, &color);
 			mlx_put_pixel(data->img_ptr, x, y, create_color(color));
 			++x;
@@ -150,10 +154,17 @@ void	calc_mandelbrot(float real, float imaginary, t_color *color)
 	}
 	else
 	{
-		float	diff = it / 1000.0;
-		color->r = 252 + diff * (50 - 252);
-		color->g = 190 + diff * (200 - 190);
-		color->b = 17 + diff * (100 - 17);
+		// float	diff = it / 1000.0;
+		// color->r = 252 + diff * (50 - 252);
+		// color->g = 190 + diff * (200 - 190);
+		// color->b = 17 + diff * (100 - 17);
+		float	diff = (int)it % 255;
+		color->r = 252 * diff;
+		color->r = 190 * diff;
+		color->r = 17 * diff;
+		color->r = color->r > 255 ?  255 : color->r;
+		color->g = color->g > 255 ?  255 : color->g;
+		color->b = color->b > 255 ?  255 : color->b;
 		// color->r = 252;
 		// color->g = 190;
 		// color->b = 17;
