@@ -6,7 +6,7 @@
 /*   By: lbohm <lbohm@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 16:14:08 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/03/11 19:08:19 by lbohm            ###   ########.fr       */
+/*   Updated: 2025/03/12 16:49:55 by lbohm            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	init_data(char *type, t_data *data)
 	if (!ft_strncmp(type, "Mandelbrot", ft_strlen(type)))
 	{
 		data->type = 0;
-		data->offset = 0.6;
+		data->x_offset = -0.5;
 	}
 	else if (!ft_strncmp(type, "Julia", ft_strlen(type)))
 		data->type = 1;
@@ -49,6 +49,7 @@ void	init_data(char *type, t_data *data)
 		error(3, data);
 	mlx_image_to_window(data->win_ptr, data->img_ptr, 0, 0);
 	data->zoom = 1.0;
+	data->y_offset = 0.0;
 }
 
 void	loop(void *param)
@@ -60,41 +61,6 @@ void	loop(void *param)
 	mlx_key_hook(data->win_ptr, key, data);
 	mlx_scroll_hook(data->win_ptr, scroll, data);
 	create_fractal(data);
-	// printf("time = %f\n", data->win_ptr->delta_time);
-}
-
-void	resize(int width, int height, void *param)
-{
-	t_data	*data;
-
-	data = param;
-	data->win_width = width;
-	data->win_height = height;
-	mlx_delete_image(data->win_ptr, data->img_ptr);
-	data->img_ptr = mlx_new_image(data->win_ptr, data->win_width, data->win_height);
-	if (!data->img_ptr)
-		error(3, data);
-	mlx_image_to_window(data->win_ptr, data->img_ptr, 0, 0);
-}
-
-void	key(mlx_key_data_t keydata, void *param)
-{
-	t_data	*data;
-
-	data = param;
-	if (keydata.key == MLX_KEY_ESCAPE && keydata.action == 1)
-		error(0, data);
-}
-
-void	scroll(double xdelta, double ydelta, void *param)
-{
-	t_data	*data;
-	double	zoom_factor;
-
-	data = param;
-	zoom_factor = 1.0 + (ydelta + xdelta) * 0.1;
-	data->zoom *= zoom_factor;
-	printf("zoom = %f\n", data->zoom);
 }
 
 void	create_fractal(t_data *data)
@@ -103,7 +69,7 @@ void	create_fractal(t_data *data)
 	int		y;
 	float	real;
 	float	imaginary;
-	t_color	color = {0, 0, 0, 0};
+	t_color	color = {0, 0, 0};
 
 	y = 0;
 	while (y < data->win_height)
@@ -111,10 +77,8 @@ void	create_fractal(t_data *data)
 		x = 0;
 		while (x < data->win_width)
 		{
-			real = ((-2.0 * data->zoom) + ((4 * data->zoom) * (float)x / data->win_width) - data->offset);
-			imaginary = ((-2.0 * data->zoom) + ((4 * data->zoom) * (float)y / data->win_height));
-			// real = (-2.0 + (4 * (float)x / data->win_width) - data->offset) * data->zoom;
-			// imaginary = (-2.0 + (4 * (float)y / data->win_height)) * data->zoom;
+			real = (-2.0 + data->x_offset) + ((4.0 / data->zoom) * (float)x / data->win_width);
+			imaginary = (-2.0 + data->y_offset) + ((4.0 / data->zoom) * (float)y / data->win_height);
 			calc_mandelbrot(real, imaginary, &color);
 			mlx_put_pixel(data->img_ptr, x, y, create_color(color));
 			++x;
@@ -134,7 +98,7 @@ void	calc_mandelbrot(float real, float imaginary, t_color *color)
 	it = 0.0;
 	z_real = 0.0;
 	z_imaginary = 0.0;
-	while (it < 1000.0)
+	while (it < 30.0)
 	{
 		z_real_tmp = z_real * z_real - z_imaginary * z_imaginary + real;
 		z_imaginary_tmp = 2 * z_real * z_imaginary + imaginary;
@@ -145,39 +109,28 @@ void	calc_mandelbrot(float real, float imaginary, t_color *color)
 			break ;
 		++it;
 	}
-	if (it == 1000.0)
+	if (it == 30.0)
 	{
 		color->r = 0;
 		color->g = 0;
 		color->b = 0;
-		color->a = 255;
 	}
 	else
 	{
-		// float	diff = it / 1000.0;
-		// color->r = 252 + diff * (50 - 252);
-		// color->g = 190 + diff * (200 - 190);
-		// color->b = 17 + diff * (100 - 17);
-		float	diff = (int)it % 255;
-		color->r = 252 * diff;
-		color->r = 190 * diff;
-		color->r = 17 * diff;
+		float	tmp = sqrtf(z_real * z_real + z_imaginary * z_imaginary);
+		float	diff = it + 1 - (log(log(tmp)) / log(2));
+		color->r = 252 + diff * (20 - 252);
+		color->g = 190 + diff * (10 - 190);
+		color->b = 17 + diff * (222 - 17);
 		color->r = color->r > 255 ?  255 : color->r;
 		color->g = color->g > 255 ?  255 : color->g;
 		color->b = color->b > 255 ?  255 : color->b;
-		// color->r = 252;
-		// color->g = 190;
-		// color->b = 17;
-		// color->r = 50;
-		// color->g = 200;
-		// color->b = 100;
-		color->a = 255;
 	}
 }
 
 uint32_t	create_color(t_color color)
 {
-	return (color.r << 24 | color.g << 16 | color.b << 8 | color.a);
+	return (color.r << 24 | color.g << 16 | color.b << 8 | 255);
 }
 
 void	error(int msg, t_data *data)
@@ -195,6 +148,12 @@ void	error(int msg, t_data *data)
 	else if (msg == 3)
 		ft_printf("NULL ptr\n");
 	if (data)
-		mlx_terminate(data->win_ptr);
+	{
+		if (data->img_ptr)
+			mlx_delete_image(data->win_ptr, data->img_ptr);
+		if (data->win_ptr)
+			mlx_terminate(data->win_ptr);
+
+	}
 	exit(msg);
 }
