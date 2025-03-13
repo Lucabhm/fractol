@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   fractol.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lbohm <lbohm@student.42.fr>                +#+  +:+       +#+        */
+/*   By: lucabohn <lucabohn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 16:14:42 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/03/12 16:14:44 by lbohm            ###   ########.fr       */
+/*   Updated: 2025/03/13 19:53:41 by lucabohn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,11 @@ typedef struct s_data
 	int			win_height;
 	mlx_t		*win_ptr;
 	mlx_image_t	*img_ptr;
-	float		x_offset;
-	float		y_offset;
-	float		zoom;
+	double		zoom;
+	double		x_max;
+	double		x_min;
+	double		y_max;
+	double		y_min;
 }				t_data;
 
 typedef struct s_color
@@ -43,9 +45,8 @@ void		loop(void *param);
 void		resize(int width, int height, void *param);
 void		key(mlx_key_data_t keydata, void *param);
 void		scroll(double xdelta, double ydelta, void *param);
-void		cursor(double xpos, double ypos, void *param);
 void		create_fractal(t_data *data);
-void		calc_mandelbrot(float real, float imaginary, t_color *color);
+void		calc_mandelbrot(double real, double imaginary, t_color *color);
 uint32_t	create_color(t_color color);
 void		error(int msg, t_data *data);
 

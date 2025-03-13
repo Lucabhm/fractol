@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lbohm <lbohm@student.42.fr>                +#+  +:+       +#+        */
+/*   By: lucabohn <lucabohn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 16:14:08 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/03/12 16:49:55 by lbohm            ###   ########.fr       */
+/*   Updated: 2025/03/13 20:09:48 by lucabohn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,7 @@ int	main(int argc, char **argv)
 void	init_data(char *type, t_data *data)
 {
 	if (!ft_strncmp(type, "Mandelbrot", ft_strlen(type)))
-	{
 		data->type = 0;
-		data->x_offset = -0.5;
-	}
 	else if (!ft_strncmp(type, "Julia", ft_strlen(type)))
 		data->type = 1;
 	else
@@ -49,7 +46,10 @@ void	init_data(char *type, t_data *data)
 		error(3, data);
 	mlx_image_to_window(data->win_ptr, data->img_ptr, 0, 0);
 	data->zoom = 1.0;
-	data->y_offset = 0.0;
+	data->x_max = 2.0;
+	data->x_min = -2.0;
+	data->y_max = 2.0;
+	data->y_min = -2.0;
 }
 
 void	loop(void *param)
@@ -67,8 +67,8 @@ void	create_fractal(t_data *data)
 {
 	int		x;
 	int		y;
-	float	real;
-	float	imaginary;
+	double	real;
+	double	imaginary;
 	t_color	color = {0, 0, 0};
 
 	y = 0;
@@ -77,8 +77,8 @@ void	create_fractal(t_data *data)
 		x = 0;
 		while (x < data->win_width)
 		{
-			real = (-2.0 + data->x_offset) + ((4.0 / data->zoom) * (float)x / data->win_width);
-			imaginary = (-2.0 + data->y_offset) + ((4.0 / data->zoom) * (float)y / data->win_height);
+			real = data->x_min + ((data->x_max - data->x_min) * (double)x / data->win_width);
+			imaginary = data->y_min + ((data->y_max - data->y_min) * (double)y / data->win_height);
 			calc_mandelbrot(real, imaginary, &color);
 			mlx_put_pixel(data->img_ptr, x, y, create_color(color));
 			++x;
@@ -87,7 +87,7 @@ void	create_fractal(t_data *data)
 	}
 }
 
-void	calc_mandelbrot(float real, float imaginary, t_color *color)
+void	calc_mandelbrot(double real, double imaginary, t_color *color)
 {
 	float	it;
 	float	z_real;
@@ -98,7 +98,7 @@ void	calc_mandelbrot(float real, float imaginary, t_color *color)
 	it = 0.0;
 	z_real = 0.0;
 	z_imaginary = 0.0;
-	while (it < 30.0)
+	while (it < 50.0)
 	{
 		z_real_tmp = z_real * z_real - z_imaginary * z_imaginary + real;
 		z_imaginary_tmp = 2 * z_real * z_imaginary + imaginary;
@@ -109,7 +109,7 @@ void	calc_mandelbrot(float real, float imaginary, t_color *color)
 			break ;
 		++it;
 	}
-	if (it == 30.0)
+	if (it == 50.0)
 	{
 		color->r = 0;
 		color->g = 0;
