@@ -6,7 +6,7 @@
 /*   By: lucabohn <lucabohn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 16:14:08 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/03/13 20:09:48 by lucabohn         ###   ########.fr       */
+/*   Updated: 2025/03/16 19:16:38 by lucabohn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ void	init_data(char *type, t_data *data)
 		data->type = 0;
 	else if (!ft_strncmp(type, "Julia", ft_strlen(type)))
 		data->type = 1;
+	else if (!ft_strncmp(type, "Fern", ft_strlen(type)))
+		data->type = 2;
 	else
 		error(2, NULL);
 	data->win_width = 500;
@@ -46,10 +48,20 @@ void	init_data(char *type, t_data *data)
 		error(3, data);
 	mlx_image_to_window(data->win_ptr, data->img_ptr, 0, 0);
 	data->zoom = 1.0;
-	data->x_max = 2.0;
-	data->x_min = -2.0;
-	data->y_max = 2.0;
-	data->y_min = -2.0;
+	if (data->type != 2)
+	{
+		data->x_max = 2.0;
+		data->x_min = -2.0;
+		data->y_max = 2.0;
+		data->y_min = -2.0;
+	}
+	else
+	{
+		data->x_max = 2.5;
+		data->x_min = -2.5;
+		data->y_max = 10.0;
+		data->y_min = -10.0;
+	}
 }
 
 void	loop(void *param)
@@ -77,55 +89,22 @@ void	create_fractal(t_data *data)
 		x = 0;
 		while (x < data->win_width)
 		{
-			real = data->x_min + ((data->x_max - data->x_min) * (double)x / data->win_width);
-			imaginary = data->y_min + ((data->y_max - data->y_min) * (double)y / data->win_height);
-			calc_mandelbrot(real, imaginary, &color);
+			if (data->type != 2)
+			{
+				real = data->x_min + ((data->x_max - data->x_min) * (double)x / data->win_width);
+				imaginary = data->y_min + ((data->y_max - data->y_min) * (double)y / data->win_height);
+			}
+			if (data->type == 0)
+				calc_mandelbrot(real, imaginary, &color);
+			else if (data->type == 1)
+				calc_julia(real, imaginary, &color);
 			mlx_put_pixel(data->img_ptr, x, y, create_color(color));
 			++x;
 		}
 		++y;
 	}
-}
-
-void	calc_mandelbrot(double real, double imaginary, t_color *color)
-{
-	float	it;
-	float	z_real;
-	float	z_imaginary;
-	float	z_real_tmp;
-	float	z_imaginary_tmp;
-
-	it = 0.0;
-	z_real = 0.0;
-	z_imaginary = 0.0;
-	while (it < 50.0)
-	{
-		z_real_tmp = z_real * z_real - z_imaginary * z_imaginary + real;
-		z_imaginary_tmp = 2 * z_real * z_imaginary + imaginary;
-
-		z_real = z_real_tmp;
-		z_imaginary = z_imaginary_tmp;
-		if (sqrtf(z_real * z_real + z_imaginary * z_imaginary) > 2.0)
-			break ;
-		++it;
-	}
-	if (it == 50.0)
-	{
-		color->r = 0;
-		color->g = 0;
-		color->b = 0;
-	}
-	else
-	{
-		float	tmp = sqrtf(z_real * z_real + z_imaginary * z_imaginary);
-		float	diff = it + 1 - (log(log(tmp)) / log(2));
-		color->r = 252 + diff * (20 - 252);
-		color->g = 190 + diff * (10 - 190);
-		color->b = 17 + diff * (222 - 17);
-		color->r = color->r > 255 ?  255 : color->r;
-		color->g = color->g > 255 ?  255 : color->g;
-		color->b = color->b > 255 ?  255 : color->b;
-	}
+	if (data->type == 2)
+		calc_fern(data);
 }
 
 uint32_t	create_color(t_color color)
@@ -141,10 +120,13 @@ void	error(int msg, t_data *data)
 	{
 		ft_printf("wrong nbr of arguments\n\n");
 		ft_printf("input looks like ./fractol \"type of fractal\"\n\n");
-		ft_printf("fractal types are: \"Mandelbrot\" or \"Julia\"\n");
+		ft_printf("fractal types are: \"Mandelbrot\", \"Julia\" or \"Fern\"\n");
 	}
 	else if (msg == 2)
-		ft_printf("fractal type not found\n");
+	{
+		ft_printf("fractal type not found\n\n");
+		ft_printf("fractal types are: \"Mandelbrot\", \"Julia\" or \"Fern\"\n");
+	}
 	else if (msg == 3)
 		ft_printf("NULL ptr\n");
 	if (data)

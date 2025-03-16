@@ -6,7 +6,7 @@
 /*   By: lucabohn <lucabohn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 16:14:42 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/03/13 19:53:41 by lucabohn         ###   ########.fr       */
+/*   Updated: 2025/03/16 19:10:04 by lucabohn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include "../libs/ft_printf/ft_printf.h"
 # include "../libs/mlx/include/MLX42/MLX42.h"
 # include <stdio.h>
+# include <stdlib.h>
 # include <math.h>
 
 typedef struct s_data
@@ -40,14 +41,25 @@ typedef struct s_color
 	int	b;
 }				t_color;
 
+// main.c
+
 void		init_data(char *type, t_data *data);
 void		loop(void *param);
-void		resize(int width, int height, void *param);
-void		key(mlx_key_data_t keydata, void *param);
-void		scroll(double xdelta, double ydelta, void *param);
 void		create_fractal(t_data *data);
-void		calc_mandelbrot(double real, double imaginary, t_color *color);
 uint32_t	create_color(t_color color);
 void		error(int msg, t_data *data);
+
+// actions.c
+
+void	resize(int width, int height, void *param);
+void	key(mlx_key_data_t keydata, void *param);
+void	scroll(double xdelta, double ydelta, void *param);
+
+// calculation.c
+
+void	calc_mandelbrot(double real, double imaginary, t_color *color);
+void	calc_julia(double real, double imaginary, t_color *color);
+void	calc_fern(t_data *data);
+void	transform(double *x, double *y);
 
 #endif

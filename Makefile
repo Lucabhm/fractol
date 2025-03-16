@@ -4,7 +4,8 @@ CFLAGS = -Wall -Wextra -Werror
 VPATH = srcs/
 
 SRC = main.c \
-		actions.c
+		actions.c \
+		calculation.c
 
 OBJDIR = objs/
 OBJ = $(SRC:.c=.o)
