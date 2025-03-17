@@ -6,7 +6,7 @@
 /*   By: lucabohn <lucabohn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 16:14:42 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/03/16 19:10:04 by lucabohn         ###   ########.fr       */
+/*   Updated: 2025/03/17 21:56:25 by lucabohn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ typedef struct s_data
 	double		x_min;
 	double		y_max;
 	double		y_min;
+	bool		moved;
 }				t_data;
 
 typedef struct s_color

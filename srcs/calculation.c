@@ -6,7 +6,7 @@
 /*   By: lucabohn <lucabohn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 18:23:12 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/03/16 19:32:59 by lucabohn         ###   ########.fr       */
+/*   Updated: 2025/03/17 22:12:32 by lucabohn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,11 +111,8 @@ void	calc_fern(t_data *data)
 	while (it < 100000)
 	{
 		transform(&x, &y);
-		// pos_x = data->x_min + ((data->x_max - data->x_min) * (double)x / data->win_width);
-		// pos_y = data->y_min + ((data->y_max - data->y_min) * (double)y / data->win_height);
 		pos_x = (x + 2.5) / 5.0 * data->win_width;
 		pos_y = (10 - y) / 10.0 * data->win_height;
-		// printf("x after = %f y after = %f\n", x, y);
 		if (pos_x > 0.0 && (int)pos_x < data->win_width && pos_y > 0.0 && (int)pos_y < data->win_height)
 			mlx_put_pixel(data->img_ptr, (int)pos_x, (int)pos_y, create_color(color));
 		++it;

@@ -6,7 +6,7 @@
 /*   By: lucabohn <lucabohn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 16:14:08 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/03/16 19:16:38 by lucabohn         ###   ########.fr       */
+/*   Updated: 2025/03/17 22:10:46 by lucabohn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,11 +57,12 @@ void	init_data(char *type, t_data *data)
 	}
 	else
 	{
-		data->x_max = 2.5;
-		data->x_min = -2.5;
+		data->x_max = 5;
+		data->x_min = 2.5;
 		data->y_max = 10.0;
-		data->y_min = -10.0;
+		data->y_min = 10.0;
 	}
+	data->moved = true;
 }
 
 void	loop(void *param)
@@ -72,7 +73,9 @@ void	loop(void *param)
 	mlx_resize_hook(data->win_ptr, resize, data);
 	mlx_key_hook(data->win_ptr, key, data);
 	mlx_scroll_hook(data->win_ptr, scroll, data);
-	create_fractal(data);
+	if (data->moved)
+		create_fractal(data);
+	data->moved = false;
 }
 
 void	create_fractal(t_data *data)

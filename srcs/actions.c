@@ -6,7 +6,7 @@
 /*   By: lucabohn <lucabohn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:54:15 by lbohm             #+#    #+#             */
-/*   Updated: 2025/03/13 20:07:56 by lucabohn         ###   ########.fr       */
+/*   Updated: 2025/03/17 22:03:29 by lucabohn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ void	resize(int width, int height, void *param)
 	if (!data->img_ptr)
 		error(3, data);
 	mlx_image_to_window(data->win_ptr, data->img_ptr, 0, 0);
+	data->moved = true;
 }
 
 void	key(mlx_key_data_t keydata, void *param)
@@ -33,14 +34,27 @@ void	key(mlx_key_data_t keydata, void *param)
 	data = param;
 	if (keydata.key == MLX_KEY_ESCAPE && keydata.action == 1)
 		error(0, data);
-	// else if (keydata.key == MLX_KEY_UP && (keydata.action == 1 || keydata.action == 2))
-	// 	data->y_offset += 0.1;
-	// else if (keydata.key == MLX_KEY_DOWN && (keydata.action == 1 || keydata.action == 2))
-	// 	data->y_offset -= 0.1;
-	// else if (keydata.key == MLX_KEY_LEFT && (keydata.action == 1 || keydata.action == 2))
-	// 	data->x_offset += 0.1;
-	// else if (keydata.key == MLX_KEY_RIGHT && (keydata.action == 1 || keydata.action == 2))
-	// 	data->x_offset -= 0.1;
+	else if (keydata.key == MLX_KEY_UP && (keydata.action == 1 || keydata.action == 2))
+	{
+		data->y_max -= 0.1;
+		data->y_min -= 0.1;
+	}
+	else if (keydata.key == MLX_KEY_DOWN && (keydata.action == 1 || keydata.action == 2))
+	{
+		data->y_max += 0.1;
+		data->y_min += 0.1;
+	}
+	else if (keydata.key == MLX_KEY_LEFT && (keydata.action == 1 || keydata.action == 2))
+	{
+		data->x_max -= 0.1;
+		data->x_min -= 0.1;
+	}
+	else if (keydata.key == MLX_KEY_RIGHT && (keydata.action == 1 || keydata.action == 2))
+	{
+		data->x_max += 0.1;
+		data->x_min += 0.1;
+	}
+	data->moved = true;
 }
 
 void	scroll(double xdelta, double ydelta, void *param)
@@ -76,4 +90,5 @@ void	scroll(double xdelta, double ydelta, void *param)
 	data->x_max = data->x_min + x_range_new;
 	data->y_min = y_mouse_imag - y_mouse_norm * y_range_new;
 	data->y_max = data->y_min + y_range_new;
+	data->moved = true;
 }
