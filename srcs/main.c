@@ -94,8 +94,8 @@ void	create_fractal(t_data *data)
 		{
 			if (data->type != 2)
 			{
-				real = data->x_min + ((data->x_max - data->x_min) * (double)x / data->win_width);
-				imaginary = data->y_min + ((data->y_max - data->y_min) * (double)y / data->win_height);
+				real = data->x_min + ((data->x_max - data->x_min) * (double)x / (double)data->win_width);
+				imaginary = data->y_min + ((data->y_max - data->y_min) * (double)y / (double)data->win_height);
 			}
 			if (data->type == 0)
 				calc_mandelbrot(real, imaginary, &color);

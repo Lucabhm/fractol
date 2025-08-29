@@ -23,7 +23,7 @@ void	calc_mandelbrot(double real, double imaginary, t_color *color)
 	it = 0.0;
 	z_real = 0.0;
 	z_imaginary = 0.0;
-	while (it < 100.0)
+	while (it < 1000.0)
 	{
 		z_real_tmp = z_real * z_real - z_imaginary * z_imaginary + real;
 		z_imaginary_tmp = 2 * z_real * z_imaginary + imaginary;

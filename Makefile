@@ -12,21 +12,18 @@ OBJ = $(SRC:.c=.o)
 OBJS_PATH = $(addprefix $(OBJDIR), $(OBJ))
 LIBFT = libs/ft_libft/
 PRINTF = libs/ft_printf/
-MLX = libs/mlx
+MLX = libs/mlx/
 INLIBFT = -L $(LIBFT) -lft
 INPRINF = -L $(PRINTF) -lftprintf
-INMLX = -L $(MLX)/build -lmlx42 -ldl -L /opt/homebrew/Cellar/glfw/3.3.8/lib/ -lglfw -pthread -lm
-
-
-# /usr/local/lib/
+INMLX = -L $(MLX)/build -lmlx42 -Iinclude -ldl -lglfw -pthread -lm
 
 all:		submodules $(OBJDIR) $(NAME)
 
 $(NAME):	logo $(OBJS_PATH)
 				@cd $(LIBFT) && $(MAKE) bonus
 				@cd $(PRINTF) && $(MAKE) all
-				@cmake $(MLX) -B $(MLX)/build && make -C $(MLX)/build -j4
-				@cc $(OBJS_PATH) $(INLIBFT) $(INPRINF) $(INMLX) -framework Cocoa -framework OpenGL -framework IOKit -o $(NAME)
+				@cd $(MLX) && cmake -B build && cmake --build build -j4
+				@cc $(OBJS_PATH) $(INLIBFT) $(INPRINF) $(INMLX) -o $(NAME)
 
 $(OBJDIR)%.o: %.c | $(OBJDIR)
 			@mkdir -p $(dir $@)
@@ -52,7 +49,7 @@ clean:
 				@rm -rf $(OBJDIR)
 				@cd $(LIBFT) && $(MAKE) clean
 				@cd $(PRINTF) && $(MAKE) clean
-				@rm -rf $(MLX)/build
+				@cd $(MLX) && rm -rf build
 
 fclean:		clean
 				@rm -f $(NAME)
