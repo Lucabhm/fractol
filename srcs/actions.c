@@ -20,7 +20,8 @@ void	resize(int width, int height, void *param)
 	data->win_width = width;
 	data->win_height = height;
 	mlx_delete_image(data->win_ptr, data->img_ptr);
-	data->img_ptr = mlx_new_image(data->win_ptr, data->win_width, data->win_height);
+	data->img_ptr = mlx_new_image(data->win_ptr,
+			data->win_width, data->win_height);
 	if (!data->img_ptr)
 		error(3, data);
 	mlx_image_to_window(data->win_ptr, data->img_ptr, 0, 0);
@@ -30,30 +31,30 @@ void	resize(int width, int height, void *param)
 void	key(mlx_key_data_t keydata, void *param)
 {
 	t_data	*data;
+	double	change_x;
+	double	change_y;
 
 	data = param;
+	change_x = 0.0;
+	change_y = 0.0;
 	if (keydata.key == MLX_KEY_ESCAPE && keydata.action == 1)
 		error(0, data);
-	else if (keydata.key == MLX_KEY_UP && (keydata.action == 1 || keydata.action == 2))
-	{
-		data->y_max -= 0.1;
-		data->y_min -= 0.1;
-	}
-	else if (keydata.key == MLX_KEY_DOWN && (keydata.action == 1 || keydata.action == 2))
-	{
-		data->y_max += 0.1;
-		data->y_min += 0.1;
-	}
-	else if (keydata.key == MLX_KEY_LEFT && (keydata.action == 1 || keydata.action == 2))
-	{
-		data->x_max -= 0.1;
-		data->x_min -= 0.1;
-	}
-	else if (keydata.key == MLX_KEY_RIGHT && (keydata.action == 1 || keydata.action == 2))
-	{
-		data->x_max += 0.1;
-		data->x_min += 0.1;
-	}
+	else if (keydata.key == MLX_KEY_UP && (keydata.action == 1
+			|| keydata.action == 2))
+		change_y = -0.1 / data->zoom;
+	else if (keydata.key == MLX_KEY_DOWN && (keydata.action == 1
+			|| keydata.action == 2))
+		change_y = 0.1 / data->zoom;
+	else if (keydata.key == MLX_KEY_LEFT && (keydata.action == 1
+			|| keydata.action == 2))
+		change_x = -0.1 / data->zoom;
+	else if (keydata.key == MLX_KEY_RIGHT && (keydata.action == 1
+			|| keydata.action == 2))
+		change_x = 0.1 / data->zoom;
+	data->x_max += change_x;
+	data->x_min += change_x;
+	data->y_max += change_y;
+	data->y_min += change_y;
 	data->moved = true;
 }
 
@@ -61,34 +62,31 @@ void	scroll(double xdelta, double ydelta, void *param)
 {
 	t_data	*data;
 	double	zoom_factor;
-	double	x_range;
-	double	y_range;
-	double	x_range_new;
-	double	y_range_new;
+	t_vec2	range;
+	t_vec2	range_new;
+	t_vec2	mouse_norm;
+	t_vec2	mouse_new;
 	int32_t	x_mouse;
 	int32_t	y_mouse;
-	double	x_mouse_norm;
-	double	y_mouse_norm;
-	double	x_mouse_real;
-	double	y_mouse_imag;
 
 	data = param;
-	x_range = data->x_max - data->x_min;
-	y_range = data->y_max - data->y_min;
+	range.x = data->x_max - data->x_min;
+	range.y = data->y_max - data->y_min;
 	mlx_get_mouse_pos(data->win_ptr, &x_mouse, &y_mouse);
-	x_mouse_norm = (double)x_mouse / (double)data->win_width;
-	y_mouse_norm = (double)y_mouse / (double)data->win_height;
-	x_mouse_real = data->x_min + x_mouse_norm * x_range;
-	y_mouse_imag = data->y_min + y_mouse_norm * y_range;
+	mouse_norm.x = (double)x_mouse / (double)data->win_width;
+	mouse_norm.y = (double)y_mouse / (double)data->win_height;
+	mouse_new.x = data->x_min + mouse_norm.x * range.x;
+	mouse_new.y = data->y_min + mouse_norm.y * range.y;
 	if (ydelta + xdelta > 0)
 		zoom_factor = 1.1;
 	else
 		zoom_factor = 0.9;
-	x_range_new = x_range / zoom_factor;
-	y_range_new = y_range / zoom_factor;
-	data->x_min = x_mouse_real - x_mouse_norm * x_range_new;
-	data->x_max = data->x_min + x_range_new;
-	data->y_min = y_mouse_imag - y_mouse_norm * y_range_new;
-	data->y_max = data->y_min + y_range_new;
+	data->zoom *= zoom_factor;
+	range_new.x = range.x / zoom_factor;
+	range_new.y = range.y / zoom_factor;
+	data->x_min = mouse_new.x - mouse_norm.x * range_new.x;
+	data->x_max = data->x_min + range_new.x;
+	data->y_min = mouse_new.y - mouse_norm.y * range_new.y;
+	data->y_max = data->y_min + range_new.y;
 	data->moved = true;
 }

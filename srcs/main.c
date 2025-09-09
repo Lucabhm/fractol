@@ -28,26 +28,28 @@ int	main(int argc, char **argv)
 	return (0);
 }
 
-void	init_data(char *type, t_data *data)
+void	check_type(char *type, t_data *data)
 {
-	if (!ft_strncmp(type, "Mandelbrot", ft_strlen(type)))
-		data->type = 0;
-	else if (!ft_strncmp(type, "Julia", ft_strlen(type)))
-		data->type = 1;
-	else if (!ft_strncmp(type, "Fern", ft_strlen(type)))
-		data->type = 2;
+	int	len;
+
+	len = ft_strlen(type);
+	if (len == 10 || len == 5 || len == 4)
+	{
+		if (!ft_strncmp(type, "Mandelbrot", len))
+			data->type = 0;
+		else if (!ft_strncmp(type, "Julia", len))
+			data->type = 1;
+		else if (!ft_strncmp(type, "Fern", len))
+			data->type = 2;
+		else
+			error(2, NULL);
+	}
 	else
 		error(2, NULL);
-	data->win_width = 500;
-	data->win_height = 500;
-	data->win_ptr = mlx_init(data->win_width, data->win_height, "fractol", true);
-	if (!data->win_ptr)
-		error(3, NULL);
-	data->img_ptr = mlx_new_image(data->win_ptr, data->win_width, data->win_height);
-	if (!data->img_ptr)
-		error(3, data);
-	mlx_image_to_window(data->win_ptr, data->img_ptr, 0, 0);
-	data->zoom = 1.0;
+}
+
+void	get_coord_size(t_data *data)
+{
 	if (data->type != 2)
 	{
 		data->x_max = 2.0;
@@ -62,6 +64,24 @@ void	init_data(char *type, t_data *data)
 		data->y_max = 10.0;
 		data->y_min = 10.0;
 	}
+}
+
+void	init_data(char *type, t_data *data)
+{
+	check_type(type, data);
+	data->win_width = 500;
+	data->win_height = 500;
+	data->win_ptr = mlx_init(data->win_width, data->win_height,
+			"fractol", true);
+	if (!data->win_ptr)
+		error(3, NULL);
+	data->img_ptr = mlx_new_image(data->win_ptr,
+			data->win_width, data->win_height);
+	if (!data->img_ptr)
+		error(3, data);
+	mlx_image_to_window(data->win_ptr, data->img_ptr, 0, 0);
+	data->zoom = 1.0;
+	get_coord_size(data);
 	data->moved = true;
 }
 
@@ -98,9 +118,9 @@ void	create_fractal(t_data *data)
 				imaginary = data->y_min + ((data->y_max - data->y_min) * (double)y / (double)data->win_height);
 			}
 			if (data->type == 0)
-				calc_mandelbrot(real, imaginary, &color);
+				calc_mandelbrot(real, imaginary, &color, data);
 			else if (data->type == 1)
-				calc_julia(real, imaginary, &color);
+				calc_julia(real, imaginary, &color, data);
 			mlx_put_pixel(data->img_ptr, x, y, create_color(color));
 			++x;
 		}
@@ -138,7 +158,6 @@ void	error(int msg, t_data *data)
 			mlx_delete_image(data->win_ptr, data->img_ptr);
 		if (data->win_ptr)
 			mlx_terminate(data->win_ptr);
-
 	}
 	exit(msg);
 }
