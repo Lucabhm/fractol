@@ -42,8 +42,16 @@ typedef struct s_color
 	int	b;
 }				t_color;
 
+typedef struct s_vec2
+{
+	double	x;
+	double	y;
+}				t_vec2;
+
 // main.c
 
+void		check_type(char *type, t_data *data);
+void		get_coord_size(t_data *data);
 void		init_data(char *type, t_data *data);
 void		loop(void *param);
 void		create_fractal(t_data *data);
@@ -52,15 +60,15 @@ void		error(int msg, t_data *data);
 
 // actions.c
 
-void	resize(int width, int height, void *param);
-void	key(mlx_key_data_t keydata, void *param);
-void	scroll(double xdelta, double ydelta, void *param);
+void		resize(int width, int height, void *param);
+void		key(mlx_key_data_t keydata, void *param);
+void		scroll(double xdelta, double ydelta, void *param);
 
 // calculation.c
 
-void	calc_mandelbrot(double real, double imaginary, t_color *color);
-void	calc_julia(double real, double imaginary, t_color *color);
-void	calc_fern(t_data *data);
-void	transform(double *x, double *y);
+void		calc_mandelbrot(double real, double imaginary, t_color *color, t_data *data);
+void		calc_julia(double real, double imaginary, t_color *color, t_data *data);
+void		calc_fern(t_data *data);
+void		transform(double *x, double *y);
 
 #endif

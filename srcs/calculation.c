@@ -12,29 +12,29 @@
 
 #include "../inc/fractol.h"
 
-void	calc_mandelbrot(double real, double imaginary, t_color *color)
+void	hsv_to_rgb(double h, double s, double v, t_color *color)
 {
-	double	it;
-	double	z_real;
-	double	z_imaginary;
-	double	z_real_tmp;
-	double	z_imaginary_tmp;
+    double	c = v * s;
+    double	x = c * (1 - fabs(fmod(h/60.0, 2) - 1));
+    double	m = v - c;
 
-	it = 0.0;
-	z_real = 0.0;
-	z_imaginary = 0.0;
-	while (it < 1000.0)
-	{
-		z_real_tmp = z_real * z_real - z_imaginary * z_imaginary + real;
-		z_imaginary_tmp = 2 * z_real * z_imaginary + imaginary;
+    double r1, g1, b1;
+    if (h < 60)      { r1 = c; g1 = x; b1 = 0; }
+    else if (h < 120){ r1 = x; g1 = c; b1 = 0; }
+    else if (h < 180){ r1 = 0; g1 = c; b1 = x; }
+    else if (h < 240){ r1 = 0; g1 = x; b1 = c; }
+    else if (h < 300){ r1 = x; g1 = 0; b1 = c; }
+    else             { r1 = c; g1 = 0; b1 = x; }
 
-		z_real = z_real_tmp;
-		z_imaginary = z_imaginary_tmp;
-		if (sqrt(z_real * z_real + z_imaginary * z_imaginary) > 2.0)
-			break ;
-		++it;
-	}
-	if (it == 100.0)
+    color->r = (unsigned char)((r1 + m) * 255);
+    color->g = (unsigned char)((g1 + m) * 255);
+    color->b = (unsigned char)((b1 + m) * 255);
+}
+
+
+void	color_greading(int it, int max_it, t_vec2 *vec, t_color *color)
+{
+	if (it == max_it)
 	{
 		color->r = 0;
 		color->g = 0;
@@ -42,56 +42,85 @@ void	calc_mandelbrot(double real, double imaginary, t_color *color)
 	}
 	else
 	{
-		float	tmp = sqrt(z_real * z_real + z_imaginary * z_imaginary);
-		float	diff = it + 1 - (log(log(tmp)) / log(2));
-		color->r = 252 + diff * (20 - 252);
-		color->g = 190 + diff * (10 - 190);
-		color->b = 17 + diff * (222 - 17);
-		color->r = color->r > 255 ?  255 : color->r;
-		color->g = color->g > 255 ?  255 : color->g;
-		color->b = color->b > 255 ?  255 : color->b;
+		double new_it = (double)it + 1.0 - log(log(vec->x + vec->y) / 2.0) / log(2.0);
+		hsv_to_rgb(powf((new_it / (double)max_it) * 360.0, 1.5), 1, 1, color);
 	}
 }
 
-void	calc_julia(double real, double imaginary, t_color *color)
+void	calc_mandelbrot(double real, double imaginary, t_color *color, t_data *data)
 {
-	double	it;
-	double	z_real;
-	double	z_imaginary;
-	double	z_real_tmp;
-	double	z_imaginary_tmp;
+	int		it;
+	int		max_it;
+	t_vec2	vec;
+	t_vec2	vec2;
+	t_vec2	prev_vec;
 
 	it = 0.0;
-	z_real = real;
-	z_imaginary = imaginary;
-	while (it < 100.0)
+	vec.x = 0.0;
+	vec.y = 0.0;
+	vec2.x = 0.0;
+	vec2.y = 0.0;
+	prev_vec.x = 0.0;
+	prev_vec.y = 0.0;
+	max_it = 1000 + (50 * log10(data->zoom));
+	while (vec2.x + vec2.y <= 4 && it < max_it)
 	{
-		z_real_tmp = z_real * z_real - z_imaginary * z_imaginary + (-1.0);
-		z_imaginary_tmp = 2 * z_real * z_imaginary + 0.2;
-
-		z_real = z_real_tmp;
-		z_imaginary = z_imaginary_tmp;
-		if (sqrt(z_real * z_real + z_imaginary * z_imaginary) > 2.0)
-			break ;
+		vec.y = 2 * vec.x * vec.y + imaginary;
+		vec.x = vec2.x - vec2.y + real;
+		vec2.x = vec.x * vec.x;
+		vec2.y = vec.y * vec.y;
 		++it;
+		if (it % 20 == 0)
+		{
+			if (fabs(vec.x - prev_vec.x) < 1e-12
+				&& fabs(vec.y - prev_vec.y) < 1e-12)
+			{
+				it = max_it;
+				break ;
+			}
+			prev_vec.x = vec.x;
+			prev_vec.y = vec.y;
+		}
 	}
-	if (it == 100.0)
+	color_greading(it, max_it, &vec2, color);
+}
+
+void	calc_julia(double real, double imaginary, t_color *color, t_data *data)
+{
+	int		it;
+	int		max_it;
+	t_vec2	vec;
+	t_vec2	vec2;
+	t_vec2	prev_vec;
+
+	it = 0.0;
+	vec.x = real;
+	vec.y = imaginary;
+	vec2.x = 0.0;
+	vec2.y = 0.0;
+	prev_vec.x = 0.0;
+	prev_vec.y = 0.0;
+	max_it = 1000 + (50 * log10(data->zoom));
+	while (vec2.x + vec2.y <= 4 && it < max_it)
 	{
-		color->r = 0;
-		color->g = 0;
-		color->b = 0;
+		vec2.x = vec.x * vec.x;
+		vec2.y = vec.y * vec.y;
+		vec.y = 2 * vec.x * vec.y + 0.2;
+		vec.x = vec2.x - vec2.y + (-1.0);
+		++it;
+		if (it % 20 == 0)
+		{
+			if (fabs(vec.x - prev_vec.x) < 1e-12
+				&& fabs(vec.y - prev_vec.y) < 1e-12)
+			{
+				it = max_it;
+				break ;
+			}
+			prev_vec.x = vec.x;
+			prev_vec.y = vec.y;
+		}
 	}
-	else
-	{
-		double	tmp = sqrt(z_real * z_real + z_imaginary * z_imaginary);
-		double	diff = it + 1 - (log(log(tmp)) / log(2));
-		color->r = 252 + diff * (20 - 252);
-		color->g = 190 + diff * (10 - 190);
-		color->b = 17 + diff * (222 - 17);
-		color->r = color->r > 255 ?  255 : color->r;
-		color->g = color->g > 255 ?  255 : color->g;
-		color->b = color->b > 255 ?  255 : color->b;
-	}
+	color_greading(it, max_it, &vec2, color);
 }
 
 void	calc_fern(t_data *data)
