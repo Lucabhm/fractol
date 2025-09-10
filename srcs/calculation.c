@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   calculation.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lucabohn <lucabohn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lbohm <lbohm@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 18:23:12 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/03/17 22:12:32 by lucabohn         ###   ########.fr       */
+/*   Updated: 2025/09/10 17:39:47 by lbohm            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,26 +14,61 @@
 
 void	hsv_to_rgb(double h, double s, double v, t_color *color)
 {
-    double	c = v * s;
-    double	x = c * (1 - fabs(fmod(h/60.0, 2) - 1));
-    double	m = v - c;
+	double	c;
+	double	x;
+	double	m;
+	t_color	tmp;
 
-    double r1, g1, b1;
-    if (h < 60)      { r1 = c; g1 = x; b1 = 0; }
-    else if (h < 120){ r1 = x; g1 = c; b1 = 0; }
-    else if (h < 180){ r1 = 0; g1 = c; b1 = x; }
-    else if (h < 240){ r1 = 0; g1 = x; b1 = c; }
-    else if (h < 300){ r1 = x; g1 = 0; b1 = c; }
-    else             { r1 = c; g1 = 0; b1 = x; }
+	c = v * s;
+	x = c * (1 - fabs(fmod(h / 60.0, 2) - 1));
+	m = v - c;
+	if (h < 60)
+	{
+		tmp.r = c;
+		tmp.g = x;
+		tmp.b = 0;
+	}
+	else if (h < 120)
+	{
+		tmp.r = x;
+		tmp.g = c;
+		tmp.b = 0;
+	}
+	else if (h < 180)
+	{
+		tmp.r = 0;
+		tmp.g = c;
+		tmp.b = x;
+	}
+	else if (h < 240)
+	{
+		tmp.r = 0;
+		tmp.g = x;
+		tmp.b = c;
+	}
+	else if (h < 300)
+	{
+		tmp.r = x;
+		tmp.g = 0;
+		tmp.b = c;
+	}
+	else
+	{
+		tmp.r = c;
+		tmp.g = 0;
+		tmp.b = x;
+	}
 
-    color->r = (unsigned char)((r1 + m) * 255);
-    color->g = (unsigned char)((g1 + m) * 255);
-    color->b = (unsigned char)((b1 + m) * 255);
+	color->r = (unsigned char)((tmp.r + m) * 255);
+	color->g = (unsigned char)((tmp.g + m) * 255);
+	color->b = (unsigned char)((tmp.b + m) * 255);
 }
 
 
 void	color_greading(int it, int max_it, t_vec2 *vec, t_color *color)
 {
+	double	new_it;
+
 	if (it == max_it)
 	{
 		color->r = 0;
@@ -42,7 +77,7 @@ void	color_greading(int it, int max_it, t_vec2 *vec, t_color *color)
 	}
 	else
 	{
-		double new_it = (double)it + 1.0 - log(log(vec->x + vec->y) / 2.0) / log(2.0);
+		new_it = (double)it + 1.0 - log(log(vec->x + vec->y) / 2.0) / log(2.0);
 		hsv_to_rgb(powf((new_it / (double)max_it) * 360.0, 1.5), 1, 1, color);
 	}
 }
@@ -100,13 +135,13 @@ void	calc_julia(double real, double imaginary, t_color *color, t_data *data)
 	vec2.y = 0.0;
 	prev_vec.x = 0.0;
 	prev_vec.y = 0.0;
-	max_it = 1000 + (50 * log10(data->zoom));
+	max_it = 100 + (50 * log10(data->zoom));
 	while (vec2.x + vec2.y <= 4 && it < max_it)
 	{
 		vec2.x = vec.x * vec.x;
 		vec2.y = vec.y * vec.y;
-		vec.y = 2 * vec.x * vec.y + 0.2;
-		vec.x = vec2.x - vec2.y + (-1.0);
+		vec.y = 2 * vec.x * vec.y + data->zi;
+		vec.x = vec2.x - vec2.y + data->zr;
 		++it;
 		if (it % 20 == 0)
 		{
@@ -130,7 +165,7 @@ void	calc_fern(t_data *data)
 	double	pos_x;
 	double	pos_y;
 	int		it;
-	t_color	color = {180,80,20};
+	t_color	color = {80,180,20};
 
 	x = 0.0;
 	pos_x = 0.0;
@@ -140,8 +175,8 @@ void	calc_fern(t_data *data)
 	while (it < 100000)
 	{
 		transform(&x, &y);
-		pos_x = (x + 2.5) / 5.0 * data->win_width;
-		pos_y = (10 - y) / 10.0 * data->win_height;
+		pos_x = (x - data->x_min) / (data->x_max - data->x_min) * data->win_width;
+		pos_y = ((-y) - data->y_min) / (data->y_max - data->y_min) * data->win_height;
 		if (pos_x > 0.0 && (int)pos_x < data->win_width && pos_y > 0.0 && (int)pos_y < data->win_height)
 			mlx_put_pixel(data->img_ptr, (int)pos_x, (int)pos_y, create_color(color));
 		++it;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   fractol.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lucabohn <lucabohn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lbohm <lbohm@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 16:14:42 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/03/17 21:56:25 by lucabohn         ###   ########.fr       */
+/*   Updated: 2025/09/10 17:41:19 by lbohm            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,14 +32,16 @@ typedef struct s_data
 	double		x_min;
 	double		y_max;
 	double		y_min;
+	double		zr;
+	double		zi;
 	bool		moved;
 }				t_data;
 
 typedef struct s_color
 {
-	int	r;
-	int	g;
-	int	b;
+	double	r;
+	double	g;
+	double	b;
 }				t_color;
 
 typedef struct s_vec2
@@ -50,9 +52,9 @@ typedef struct s_vec2
 
 // main.c
 
-void		check_type(char *type, t_data *data);
+void		check_type(int size, char **argv, t_data *data);
 void		get_coord_size(t_data *data);
-void		init_data(char *type, t_data *data);
+void		init_data(int size, char **argv, t_data *data);
 void		loop(void *param);
 void		create_fractal(t_data *data);
 uint32_t	create_color(t_color color);
@@ -66,9 +68,16 @@ void		scroll(double xdelta, double ydelta, void *param);
 
 // calculation.c
 
-void		calc_mandelbrot(double real, double imaginary, t_color *color, t_data *data);
-void		calc_julia(double real, double imaginary, t_color *color, t_data *data);
+void		calc_mandelbrot(double real, double imaginary,
+				t_color *color, t_data *data);
+void		calc_julia(double real, double imaginary,
+				t_color *color, t_data *data);
 void		calc_fern(t_data *data);
 void		transform(double *x, double *y);
+
+// utils.c
+
+float		ft_atof(char *input);
+bool		check_input(char *input);
 
 #endif

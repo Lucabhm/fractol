@@ -5,7 +5,8 @@ VPATH = srcs/
 
 SRC = main.c \
 		actions.c \
-		calculation.c
+		calculation.c \
+		utils.c
 
 OBJDIR = objs/
 OBJ = $(SRC:.c=.o)
