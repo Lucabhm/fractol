@@ -6,7 +6,7 @@
 /*   By: lbohm <lbohm@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 16:14:42 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/09/10 15:42:24 by lbohm            ###   ########.fr       */
+/*   Updated: 2025/09/10 17:41:19 by lbohm            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,9 @@ typedef struct s_data
 
 typedef struct s_color
 {
-	int	r;
-	int	g;
-	int	b;
+	double	r;
+	double	g;
+	double	b;
 }				t_color;
 
 typedef struct s_vec2

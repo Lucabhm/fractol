@@ -6,7 +6,7 @@
 /*   By: lbohm <lbohm@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 16:14:08 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/09/10 17:04:12 by lbohm            ###   ########.fr       */
+/*   Updated: 2025/09/10 17:41:37 by lbohm            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,7 @@ void	create_fractal(t_data *data)
 
 uint32_t	create_color(t_color color)
 {
-	return (color.r << 24 | color.g << 16 | color.b << 8 | 255);
+	return ((int)color.r << 24 | (int)color.g << 16 | (int)color.b << 8 | 255);
 }
 
 void	error(int msg, t_data *data)
