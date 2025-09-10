@@ -6,7 +6,7 @@
 /*   By: lbohm <lbohm@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 16:14:08 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/09/10 15:45:48 by lbohm            ###   ########.fr       */
+/*   Updated: 2025/09/10 17:04:12 by lbohm            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,10 +63,10 @@ void	get_coord_size(t_data *data)
 	}
 	else
 	{
-		data->x_max = 5;
-		data->x_min = 2.5;
-		data->y_max = 10.0;
-		data->y_min = 10.0;
+		data->x_max = 5.0;
+		data->x_min = -5.0;
+		data->y_max = 0.0;
+		data->y_min = -12.0;
 	}
 }
 

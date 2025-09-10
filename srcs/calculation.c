@@ -6,7 +6,7 @@
 /*   By: lbohm <lbohm@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 18:23:12 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/09/10 15:49:21 by lbohm            ###   ########.fr       */
+/*   Updated: 2025/09/10 17:04:13 by lbohm            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,7 @@ void	calc_fern(t_data *data)
 	double	pos_x;
 	double	pos_y;
 	int		it;
-	t_color	color = {180,80,20};
+	t_color	color = {80,180,20};
 
 	x = 0.0;
 	pos_x = 0.0;
@@ -140,8 +140,8 @@ void	calc_fern(t_data *data)
 	while (it < 100000)
 	{
 		transform(&x, &y);
-		pos_x = (x + 2.5) / 5.0 * data->win_width;
-		pos_y = (10 - y) / 10.0 * data->win_height;
+		pos_x = (x - data->x_min) / (data->x_max - data->x_min) * data->win_width;
+		pos_y = ((-y) - data->y_min) / (data->y_max - data->y_min) * data->win_height;
 		if (pos_x > 0.0 && (int)pos_x < data->win_width && pos_y > 0.0 && (int)pos_y < data->win_height)
 			mlx_put_pixel(data->img_ptr, (int)pos_x, (int)pos_y, create_color(color));
 		++it;
