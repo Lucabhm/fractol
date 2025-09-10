@@ -6,7 +6,7 @@
 /*   By: lbohm <lbohm@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 16:14:42 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/09/10 17:41:19 by lbohm            ###   ########.fr       */
+/*   Updated: 2025/09/10 17:59:06 by lbohm            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ void		transform(double *x, double *y);
 // utils.c
 
 float		ft_atof(char *input);
+void		extract_float(float *result, char *input);
 bool		check_input(char *input);
 
 #endif

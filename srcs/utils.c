@@ -6,7 +6,7 @@
 /*   By: lbohm <lbohm@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 12:05:35 by lbohm             #+#    #+#             */
-/*   Updated: 2025/09/10 15:44:18 by lbohm            ###   ########.fr       */
+/*   Updated: 2025/09/10 17:59:18 by lbohm            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,10 @@
 float	ft_atof(char *input)
 {
 	float	result;
-	float	fraction;
 	int		sign;
-	bool	after;
 
 	result = 0.0;
 	sign = 1;
-	after = false;
-	fraction = 0.1;
 
 	if (!check_input(input))
 		error(1, NULL);
@@ -33,6 +29,17 @@ float	ft_atof(char *input)
 		sign = -1;
 	if (*input == '-' || *input == '+')
 		input++;
+	extract_float(&result, input);
+	return (sign * result);
+}
+
+void	extract_float(float *result, char *input)
+{
+	float	fraction;
+	bool	after;
+
+	fraction = 0.1;
+	after = false;
 	while (*input)
 	{
 		if (*input == '.')
@@ -43,15 +50,14 @@ float	ft_atof(char *input)
 		if (!ft_isdigit(*input))
 			break ;
 		if (!after)
-			result += result * 10 + (*input - '0');
+			*result += *result * 10 + (*input - '0');
 		else
 		{
-			result += (*input - '0') * fraction;
+			*result += (*input - '0') * fraction;
 			fraction *= 0.1;
 		}
 		input++;
 	}
-	return (sign * result);
 }
 
 bool	check_input(char *input)
