@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   calculation.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lucabohn <lucabohn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lbohm <lbohm@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 18:23:12 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/03/17 22:12:32 by lucabohn         ###   ########.fr       */
+/*   Updated: 2025/09/10 15:49:21 by lbohm            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,21 +14,21 @@
 
 void	hsv_to_rgb(double h, double s, double v, t_color *color)
 {
-    double	c = v * s;
-    double	x = c * (1 - fabs(fmod(h/60.0, 2) - 1));
-    double	m = v - c;
+	double	c = v * s;
+	double	x = c * (1 - fabs(fmod(h/60.0, 2) - 1));
+	double	m = v - c;
 
-    double r1, g1, b1;
-    if (h < 60)      { r1 = c; g1 = x; b1 = 0; }
-    else if (h < 120){ r1 = x; g1 = c; b1 = 0; }
-    else if (h < 180){ r1 = 0; g1 = c; b1 = x; }
-    else if (h < 240){ r1 = 0; g1 = x; b1 = c; }
-    else if (h < 300){ r1 = x; g1 = 0; b1 = c; }
-    else             { r1 = c; g1 = 0; b1 = x; }
+	double r1, g1, b1;
+	if (h < 60)      { r1 = c; g1 = x; b1 = 0; }
+	else if (h < 120){ r1 = x; g1 = c; b1 = 0; }
+	else if (h < 180){ r1 = 0; g1 = c; b1 = x; }
+	else if (h < 240){ r1 = 0; g1 = x; b1 = c; }
+	else if (h < 300){ r1 = x; g1 = 0; b1 = c; }
+	else             { r1 = c; g1 = 0; b1 = x; }
 
-    color->r = (unsigned char)((r1 + m) * 255);
-    color->g = (unsigned char)((g1 + m) * 255);
-    color->b = (unsigned char)((b1 + m) * 255);
+	color->r = (unsigned char)((r1 + m) * 255);
+	color->g = (unsigned char)((g1 + m) * 255);
+	color->b = (unsigned char)((b1 + m) * 255);
 }
 
 
@@ -100,13 +100,13 @@ void	calc_julia(double real, double imaginary, t_color *color, t_data *data)
 	vec2.y = 0.0;
 	prev_vec.x = 0.0;
 	prev_vec.y = 0.0;
-	max_it = 1000 + (50 * log10(data->zoom));
+	max_it = 100 + (50 * log10(data->zoom));
 	while (vec2.x + vec2.y <= 4 && it < max_it)
 	{
 		vec2.x = vec.x * vec.x;
 		vec2.y = vec.y * vec.y;
-		vec.y = 2 * vec.x * vec.y + 0.2;
-		vec.x = vec2.x - vec2.y + (-1.0);
+		vec.y = 2 * vec.x * vec.y + data->zi;
+		vec.x = vec2.x - vec2.y + data->zr;
 		++it;
 		if (it % 20 == 0)
 		{

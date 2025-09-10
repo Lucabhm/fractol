@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lucabohn <lucabohn@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lbohm <lbohm@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 16:14:08 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/03/17 22:10:46 by lucabohn         ###   ########.fr       */
+/*   Updated: 2025/09/10 15:45:48 by lbohm            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@ int	main(int argc, char **argv)
 {
 	t_data	data;
 
-	if (argc == 2)
+	if (argc >= 2)
 	{
-		init_data(argv[1], &data);
+		init_data(argc, argv, &data);
 		mlx_loop_hook(data.win_ptr, loop, &data);
 		mlx_loop(data.win_ptr);
 		mlx_terminate(data.win_ptr);
@@ -28,18 +28,22 @@ int	main(int argc, char **argv)
 	return (0);
 }
 
-void	check_type(char *type, t_data *data)
+void	check_type(int size, char **argv, t_data *data)
 {
 	int	len;
 
-	len = ft_strlen(type);
+	len = ft_strlen(argv[1]);
 	if (len == 10 || len == 5 || len == 4)
 	{
-		if (!ft_strncmp(type, "Mandelbrot", len))
+		if (!ft_strncmp(argv[1], "Mandelbrot", len) && size == 2)
 			data->type = 0;
-		else if (!ft_strncmp(type, "Julia", len))
+		else if (!ft_strncmp(argv[1], "Julia", len) && size == 4)
+		{
 			data->type = 1;
-		else if (!ft_strncmp(type, "Fern", len))
+			data->zr = ft_atof(argv[2]);
+			data->zi = ft_atof(argv[3]);
+		}
+		else if (!ft_strncmp(argv[1], "Fern", len) && size == 2)
 			data->type = 2;
 		else
 			error(2, NULL);
@@ -66,9 +70,9 @@ void	get_coord_size(t_data *data)
 	}
 }
 
-void	init_data(char *type, t_data *data)
+void	init_data(int size, char **args, t_data *data)
 {
-	check_type(type, data);
+	check_type(size, args, data);
 	data->win_width = 500;
 	data->win_height = 500;
 	data->win_ptr = mlx_init(data->win_width, data->win_height,
@@ -143,7 +147,8 @@ void	error(int msg, t_data *data)
 	{
 		ft_printf("wrong nbr of arguments\n\n");
 		ft_printf("input looks like ./fractol \"type of fractal\"\n\n");
-		ft_printf("fractal types are: \"Mandelbrot\", \"Julia\" or \"Fern\"\n");
+		ft_printf("fractal types are: \"Mandelbrot\",");
+		ft_printf(" \"Julia zr: float zi: float\" or \"Fern\"\n");
 	}
 	else if (msg == 2)
 	{
