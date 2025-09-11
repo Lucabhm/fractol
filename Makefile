@@ -6,7 +6,10 @@ VPATH = srcs/
 SRC = main.c \
 		actions.c \
 		calculation.c \
-		utils.c
+		utils.c \
+		error.c \
+		fern_calculation.c \
+		color_greading.c
 
 OBJDIR = objs/
 OBJ = $(SRC:.c=.o)

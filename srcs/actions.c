@@ -6,7 +6,7 @@
 /*   By: lbohm <lbohm@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:54:15 by lbohm             #+#    #+#             */
-/*   Updated: 2025/09/10 17:13:48 by lbohm            ###   ########.fr       */
+/*   Updated: 2025/09/11 13:53:03 by lbohm            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,17 +39,13 @@ void	key(mlx_key_data_t keydata, void *param)
 	change_y = 0.0;
 	if (keydata.key == MLX_KEY_ESCAPE && keydata.action == 1)
 		error(0, data);
-	else if (keydata.key == MLX_KEY_UP && (keydata.action == 1
-			|| keydata.action == 2))
+	else if (keydata.key == MLX_KEY_UP && keydata.action == 1)
 		change_y = -0.1 / data->zoom;
-	else if (keydata.key == MLX_KEY_DOWN && (keydata.action == 1
-			|| keydata.action == 2))
+	else if (keydata.key == MLX_KEY_DOWN && keydata.action == 1)
 		change_y = 0.1 / data->zoom;
-	else if (keydata.key == MLX_KEY_LEFT && (keydata.action == 1
-			|| keydata.action == 2))
+	else if (keydata.key == MLX_KEY_LEFT && keydata.action == 1)
 		change_x = -0.1 / data->zoom;
-	else if (keydata.key == MLX_KEY_RIGHT && (keydata.action == 1
-			|| keydata.action == 2))
+	else if (keydata.key == MLX_KEY_RIGHT && keydata.action == 1)
 		change_x = 0.1 / data->zoom;
 	data->x_max += change_x;
 	data->x_min += change_x;
@@ -61,20 +57,28 @@ void	key(mlx_key_data_t keydata, void *param)
 void	scroll(double xdelta, double ydelta, void *param)
 {
 	t_data	*data;
-	double	zoom_factor;
-	t_vec2	range;
-	t_vec2	range_new;
 	t_vec2	mouse_norm;
-	t_vec2	mouse_new;
 	int32_t	x_mouse;
 	int32_t	y_mouse;
 
 	data = param;
-	range.x = data->x_max - data->x_min;
-	range.y = data->y_max - data->y_min;
 	mlx_get_mouse_pos(data->win_ptr, &x_mouse, &y_mouse);
 	mouse_norm.x = (double)x_mouse / (double)data->win_width;
 	mouse_norm.y = (double)y_mouse / (double)data->win_height;
+	scroll_util(xdelta, ydelta, mouse_norm, data);
+	data->moved = true;
+}
+
+void	scroll_util(double xdelta, double ydelta,
+			t_vec2 mouse_norm, t_data *data)
+{
+	t_vec2	range;
+	t_vec2	mouse_new;
+	double	zoom_factor;
+	t_vec2	range_new;
+
+	range.x = data->x_max - data->x_min;
+	range.y = data->y_max - data->y_min;
 	mouse_new.x = data->x_min + mouse_norm.x * range.x;
 	mouse_new.y = data->y_min + mouse_norm.y * range.y;
 	if (ydelta + xdelta > 0)
@@ -88,5 +92,4 @@ void	scroll(double xdelta, double ydelta, void *param)
 	data->x_max = data->x_min + range_new.x;
 	data->y_min = mouse_new.y - mouse_norm.y * range_new.y;
 	data->y_max = data->y_min + range_new.y;
-	data->moved = true;
 }

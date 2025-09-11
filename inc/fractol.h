@@ -6,7 +6,7 @@
 /*   By: lbohm <lbohm@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 16:14:42 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/09/10 17:59:06 by lbohm            ###   ########.fr       */
+/*   Updated: 2025/09/11 15:42:20 by lbohm            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,19 +52,18 @@ typedef struct s_vec2
 
 // main.c
 
-void		check_type(int size, char **argv, t_data *data);
-void		get_coord_size(t_data *data);
 void		init_data(int size, char **argv, t_data *data);
 void		loop(void *param);
-void		create_fractal(t_data *data);
-uint32_t	create_color(t_color color);
-void		error(int msg, t_data *data);
+void		create_fractal(t_data *data, t_color *color);
+uint32_t	create_color(t_color *color);
 
 // actions.c
 
 void		resize(int width, int height, void *param);
 void		key(mlx_key_data_t keydata, void *param);
 void		scroll(double xdelta, double ydelta, void *param);
+void		scroll_util(double xdelta, double ydelta,
+				t_vec2 mouse_norm, t_data *data);
 
 // calculation.c
 
@@ -72,13 +71,37 @@ void		calc_mandelbrot(double real, double imaginary,
 				t_color *color, t_data *data);
 void		calc_julia(double real, double imaginary,
 				t_color *color, t_data *data);
-void		calc_fern(t_data *data);
-void		transform(double *x, double *y);
+bool		check_inf(int *it, int max_it, t_vec2 vec);
+void		calc_fern(t_data *data, t_color *color);
 
 // utils.c
 
 float		ft_atof(char *input);
 void		extract_float(float *result, char *input);
 bool		check_input(char *input);
+void		check_type(int size, char **argv, t_data *data);
+void		get_coord_size(t_data *data);
+
+// error.c
+
+void		error(int msg, t_data *data);
+
+// fern_calculation.c
+
+void		transform(double *x, double *y, t_color *color);
+void		fern_stem(t_vec2 *next, double y, t_color *color);
+void		fern_small_leaf(t_vec2 *next, double x, double y, t_color *color);
+void		fern_big_left_leaf(t_vec2 *next, double x,
+				double y, t_color *color);
+void		fern_big_right_leaf(t_vec2 *next, double x,
+				double y, t_color *color);
+
+// color_greading.c
+
+void		color_greading(int it, int max_it, t_vec2 *vec, t_color *color);
+void		hsv_to_rgb(double h, t_color *color);
+void		color_circle_1(t_color *tmp, double h, double x);
+void		color_circle_2(t_color *tmp, double h, double x);
+void		color_circle_3(t_color *tmp, double h, double x);
 
 #endif
