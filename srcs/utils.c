@@ -6,7 +6,7 @@
 /*   By: lbohm <lbohm@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 12:05:35 by lbohm             #+#    #+#             */
-/*   Updated: 2025/09/10 17:59:18 by lbohm            ###   ########.fr       */
+/*   Updated: 2025/09/11 13:48:55 by lbohm            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,8 @@ float	ft_atof(char *input)
 
 	result = 0.0;
 	sign = 1;
-
 	if (!check_input(input))
 		error(1, NULL);
-
 	while (*input && (*input == ' ' || *input == '\t'))
 		input++;
 	if (*input == '-')
@@ -75,4 +73,46 @@ bool	check_input(char *input)
 		i++;
 	}
 	return (true);
+}
+
+void	check_type(int size, char **argv, t_data *data)
+{
+	int	len;
+
+	len = ft_strlen(argv[1]);
+	if (len == 10 || len == 5 || len == 4)
+	{
+		if (!ft_strncmp(argv[1], "Mandelbrot", len) && size == 2)
+			data->type = 0;
+		else if (!ft_strncmp(argv[1], "Julia", len) && size == 4)
+		{
+			data->type = 1;
+			data->zr = ft_atof(argv[2]);
+			data->zi = ft_atof(argv[3]);
+		}
+		else if (!ft_strncmp(argv[1], "Fern", len) && size == 2)
+			data->type = 2;
+		else
+			error(2, NULL);
+	}
+	else
+		error(2, NULL);
+}
+
+void	get_coord_size(t_data *data)
+{
+	if (data->type != 2)
+	{
+		data->x_max = 2.0;
+		data->x_min = -2.0;
+		data->y_max = 2.0;
+		data->y_min = -2.0;
+	}
+	else
+	{
+		data->x_max = 5.0;
+		data->x_min = -5.0;
+		data->y_max = 0.0;
+		data->y_min = -12.0;
+	}
 }

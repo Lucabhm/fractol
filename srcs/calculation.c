@@ -6,7 +6,7 @@
 /*   By: lbohm <lbohm@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 18:23:12 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/09/10 17:39:47 by lbohm            ###   ########.fr       */
+/*   Updated: 2025/09/11 14:02:23 by lbohm            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,8 @@ void	calc_mandelbrot(double real, double imaginary, t_color *color, t_data *data
 	prev_vec.x = 0.0;
 	prev_vec.y = 0.0;
 	max_it = 1000 + (50 * log10(data->zoom));
+	if (max_it < 0 || max_it > 100000)
+		max_it = 100000;
 	while (vec2.x + vec2.y <= 4 && it < max_it)
 	{
 		vec.y = 2 * vec.x * vec.y + imaginary;
@@ -136,6 +138,8 @@ void	calc_julia(double real, double imaginary, t_color *color, t_data *data)
 	prev_vec.x = 0.0;
 	prev_vec.y = 0.0;
 	max_it = 100 + (50 * log10(data->zoom));
+	if (max_it < 0 || max_it > 100000)
+		max_it = 100000;
 	while (vec2.x + vec2.y <= 4 && it < max_it)
 	{
 		vec2.x = vec.x * vec.x;
@@ -158,15 +162,17 @@ void	calc_julia(double real, double imaginary, t_color *color, t_data *data)
 	color_greading(it, max_it, &vec2, color);
 }
 
-void	calc_fern(t_data *data)
+void	calc_fern(t_data *data, t_color *color)
 {
 	double	x;
 	double	y;
 	double	pos_x;
 	double	pos_y;
 	int		it;
-	t_color	color = {80,180,20};
 
+	color->r = 80;
+	color->g = 180;
+	color->b = 20;
 	x = 0.0;
 	pos_x = 0.0;
 	pos_y = 0.0;
@@ -181,35 +187,4 @@ void	calc_fern(t_data *data)
 			mlx_put_pixel(data->img_ptr, (int)pos_x, (int)pos_y, create_color(color));
 		++it;
 	}
-}
-
-void	transform(double *x, double *y)
-{
-	double	random_nbr;
-	double	next_x;
-	double	next_y;
-
-	random_nbr = (double)rand() / RAND_MAX;
-	if (random_nbr < 0.01)
-	{
-		next_x = 0.0;
-		next_y = 0.16 * (*y);
-	}
-	else if (random_nbr < 0.86)
-	{
-		next_x = 0.85 * (*x) + 0.04 * (*y);
-		next_y = -0.04 * (*x) + 0.85 * (*y) + 1.6;
-	}
-	else if (random_nbr < 0.93)
-	{
-		next_x = 0.2 * (*x) - 0.26 * (*y);
-		next_y = 0.23 * (*x) + 0.22 * (*y) + 1.6;
-	}
-	else
-	{
-		next_x = -0.15 * (*x) + 0.28 * (*y);
-		next_y = 0.26 * (*x) + 0.24 * (*y) + 0.44;
-	}
-	*x = next_x;
-	*y = next_y;
 }
