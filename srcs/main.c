@@ -6,7 +6,7 @@
 /*   By: lbohm <lbohm@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 16:14:08 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/09/11 14:01:08 by lbohm            ###   ########.fr       */
+/*   Updated: 2025/09/11 16:38:17 by lbohm            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,9 +74,9 @@ void	create_fractal(t_data *data, t_color *color)
 	double	imaginary;
 
 	y = 0;
-	while (data->type != 2 && y < data->win_height)
+	while (y < data->win_height)
 	{
-		x = 0;
+		x = -1;
 		while (++x < data->win_width)
 		{
 			real = data->x_min + ((data->x_max - data->x_min)

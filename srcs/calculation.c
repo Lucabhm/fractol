@@ -6,97 +6,25 @@
 /*   By: lbohm <lbohm@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 18:23:12 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/09/11 14:02:23 by lbohm            ###   ########.fr       */
+/*   Updated: 2025/09/11 16:46:29 by lbohm            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/fractol.h"
 
-void	hsv_to_rgb(double h, double s, double v, t_color *color)
-{
-	double	c;
-	double	x;
-	double	m;
-	t_color	tmp;
-
-	c = v * s;
-	x = c * (1 - fabs(fmod(h / 60.0, 2) - 1));
-	m = v - c;
-	if (h < 60)
-	{
-		tmp.r = c;
-		tmp.g = x;
-		tmp.b = 0;
-	}
-	else if (h < 120)
-	{
-		tmp.r = x;
-		tmp.g = c;
-		tmp.b = 0;
-	}
-	else if (h < 180)
-	{
-		tmp.r = 0;
-		tmp.g = c;
-		tmp.b = x;
-	}
-	else if (h < 240)
-	{
-		tmp.r = 0;
-		tmp.g = x;
-		tmp.b = c;
-	}
-	else if (h < 300)
-	{
-		tmp.r = x;
-		tmp.g = 0;
-		tmp.b = c;
-	}
-	else
-	{
-		tmp.r = c;
-		tmp.g = 0;
-		tmp.b = x;
-	}
-
-	color->r = (unsigned char)((tmp.r + m) * 255);
-	color->g = (unsigned char)((tmp.g + m) * 255);
-	color->b = (unsigned char)((tmp.b + m) * 255);
-}
-
-
-void	color_greading(int it, int max_it, t_vec2 *vec, t_color *color)
-{
-	double	new_it;
-
-	if (it == max_it)
-	{
-		color->r = 0;
-		color->g = 0;
-		color->b = 0;
-	}
-	else
-	{
-		new_it = (double)it + 1.0 - log(log(vec->x + vec->y) / 2.0) / log(2.0);
-		hsv_to_rgb(powf((new_it / (double)max_it) * 360.0, 1.5), 1, 1, color);
-	}
-}
-
-void	calc_mandelbrot(double real, double imaginary, t_color *color, t_data *data)
+void	calc_mandelbrot(double real, double imaginary,
+			t_color *color, t_data *data)
 {
 	int		it;
 	int		max_it;
 	t_vec2	vec;
 	t_vec2	vec2;
-	t_vec2	prev_vec;
 
 	it = 0.0;
 	vec.x = 0.0;
 	vec.y = 0.0;
 	vec2.x = 0.0;
 	vec2.y = 0.0;
-	prev_vec.x = 0.0;
-	prev_vec.y = 0.0;
 	max_it = 1000 + (50 * log10(data->zoom));
 	if (max_it < 0 || max_it > 100000)
 		max_it = 100000;
@@ -107,17 +35,8 @@ void	calc_mandelbrot(double real, double imaginary, t_color *color, t_data *data
 		vec2.x = vec.x * vec.x;
 		vec2.y = vec.y * vec.y;
 		++it;
-		if (it % 20 == 0)
-		{
-			if (fabs(vec.x - prev_vec.x) < 1e-12
-				&& fabs(vec.y - prev_vec.y) < 1e-12)
-			{
-				it = max_it;
-				break ;
-			}
-			prev_vec.x = vec.x;
-			prev_vec.y = vec.y;
-		}
+		if (check_inf(&it, max_it, vec))
+			break ;
 	}
 	color_greading(it, max_it, &vec2, color);
 }
@@ -128,15 +47,12 @@ void	calc_julia(double real, double imaginary, t_color *color, t_data *data)
 	int		max_it;
 	t_vec2	vec;
 	t_vec2	vec2;
-	t_vec2	prev_vec;
 
 	it = 0.0;
 	vec.x = real;
 	vec.y = imaginary;
 	vec2.x = 0.0;
 	vec2.y = 0.0;
-	prev_vec.x = 0.0;
-	prev_vec.y = 0.0;
 	max_it = 100 + (50 * log10(data->zoom));
 	if (max_it < 0 || max_it > 100000)
 		max_it = 100000;
@@ -147,44 +63,57 @@ void	calc_julia(double real, double imaginary, t_color *color, t_data *data)
 		vec.y = 2 * vec.x * vec.y + data->zi;
 		vec.x = vec2.x - vec2.y + data->zr;
 		++it;
-		if (it % 20 == 0)
-		{
-			if (fabs(vec.x - prev_vec.x) < 1e-12
-				&& fabs(vec.y - prev_vec.y) < 1e-12)
-			{
-				it = max_it;
-				break ;
-			}
-			prev_vec.x = vec.x;
-			prev_vec.y = vec.y;
-		}
+		if (check_inf(&it, max_it, vec))
+			break ;
 	}
 	color_greading(it, max_it, &vec2, color);
 }
 
+bool	check_inf(int *it, int max_it, t_vec2 vec)
+{
+	static t_vec2	prev_vec;
+
+	prev_vec.x = 0;
+	prev_vec.y = 0;
+	if (*it % 20 == 0)
+	{
+		if (fabs(vec.x - prev_vec.x) < 1e-12
+			&& fabs(vec.y - prev_vec.y) < 1e-12)
+		{
+			*it = max_it;
+			return (true);
+		}
+		prev_vec.x = vec.x;
+		prev_vec.y = vec.y;
+	}
+	return (false);
+}
+
 void	calc_fern(t_data *data, t_color *color)
 {
-	double	x;
-	double	y;
-	double	pos_x;
-	double	pos_y;
+	t_vec2	coords;
+	t_vec2	pos;
 	int		it;
+	int		max_it;
 
-	color->r = 80;
-	color->g = 180;
-	color->b = 20;
-	x = 0.0;
-	pos_x = 0.0;
-	pos_y = 0.0;
-	y = 0.0;
-	it = 0;
-	while (it < 100000)
+	coords.x = 0.0;
+	pos.x = 0.0;
+	pos.y = 0.0;
+	coords.y = 0.0;
+	it = -1;
+	max_it = 100000 * data->zoom;
+	if (max_it < 0 || max_it > 50000000)
+		max_it = 50000000;
+	while (++it < max_it)
 	{
-		transform(&x, &y);
-		pos_x = (x - data->x_min) / (data->x_max - data->x_min) * data->win_width;
-		pos_y = ((-y) - data->y_min) / (data->y_max - data->y_min) * data->win_height;
-		if (pos_x > 0.0 && (int)pos_x < data->win_width && pos_y > 0.0 && (int)pos_y < data->win_height)
-			mlx_put_pixel(data->img_ptr, (int)pos_x, (int)pos_y, create_color(color));
-		++it;
+		transform(&coords.x, &coords.y, color);
+		pos.x = (coords.x - data->x_min) / (data->x_max - data->x_min)
+			* data->win_width;
+		pos.y = ((-coords.y) - data->y_min) / (data->y_max - data->y_min)
+			* data->win_height;
+		if ((int)pos.x > 0.0 && (int)pos.x < data->win_width && (int)pos.y
+			> 0.0 && (int)pos.y < data->win_height)
+			mlx_put_pixel(data->img_ptr, (int)pos.x,
+				(int)pos.y, create_color(color));
 	}
 }
