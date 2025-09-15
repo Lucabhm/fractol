@@ -6,7 +6,7 @@
 /*   By: lbohm <lbohm@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 18:23:12 by lucabohn          #+#    #+#             */
-/*   Updated: 2025/09/11 16:46:29 by lbohm            ###   ########.fr       */
+/*   Updated: 2025/09/15 11:32:48 by lbohm            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	calc_mandelbrot(double real, double imaginary,
 	vec.y = 0.0;
 	vec2.x = 0.0;
 	vec2.y = 0.0;
-	max_it = 1000 + (50 * log10(data->zoom));
+	max_it = 500 + (50 * log10(data->zoom));
 	if (max_it < 0 || max_it > 100000)
 		max_it = 100000;
 	while (vec2.x + vec2.y <= 4 && it < max_it)
@@ -53,7 +53,7 @@ void	calc_julia(double real, double imaginary, t_color *color, t_data *data)
 	vec.y = imaginary;
 	vec2.x = 0.0;
 	vec2.y = 0.0;
-	max_it = 100 + (50 * log10(data->zoom));
+	max_it = 500 + (50 * log10(data->zoom));
 	if (max_it < 0 || max_it > 100000)
 		max_it = 100000;
 	while (vec2.x + vec2.y <= 4 && it < max_it)
